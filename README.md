@@ -8,9 +8,19 @@ RMFBLayer provides a streamlined interface to the two Facebook API abstractions 
 
 **WARNING:** Since PhFacebook.framework originally does not support completion blocks, a modified version is available [as fork](https://github.com/raffael-me/PhFacebook), separately.
 
-## Requires:
+## Requirements:
+
 - You have added Social.framework to your app
 - You have added the [PhFacebook.framework](https://github.com/raffael-me/PhFacebook) with completion block support
+
+## Details:
+
+RMFBLayer provides an interface to quickly send requests and process their result. It does that by delegating the requests to abstractions. Currently, two abstraction intances are available: 
+* RMFBOSX: The OS X Facebook integration,
+* RMFBPhFacebook: The PhFacebook framework
+Both abstractions, and the layer itself, share the same interface to access the Facebook API.
+
+To make FQL requests, wrap them into a normal GET request.
 
 ## Usage:
 
@@ -47,4 +57,4 @@ RMFBLayer provides a streamlined interface to the two Facebook API abstractions 
 ```
 
 # Status
-Currently marked as BETA
+Currently marked as BETA. PhFacebook usage has not been tested heavily.
