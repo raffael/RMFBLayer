@@ -1,6 +1,5 @@
 //
 //  RMFBPhFacebook.m
-//  Messages for FB
 //
 //  Created by Raffael Hannemann on 01.02.13.
 //  Copyright (c) 2013 raffael.me. All rights reserved.
@@ -50,22 +49,6 @@
 	}
 }
 
-/* redundant since blocks available now:
-- (void) requestResult:(NSDictionary *)result {
-	NSString *requestUrlString = [result objectForKey:@"request"];
-	RMFBLayerCompletionBlock block = [request2BlockMap objectForKey:requestUrlString];
-	if (block) {
-		NSString *jsonString = [result objectForKey:@"result"];
-		NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-		NSError *jsonError;
-		NSDictionary *json = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves|NSJSONReadingAllowFragments error:&jsonError];
-		block(json, nil);
-	} else {
-		NSLog(@"Got a response for a request which does not belong to a completion block");
-	}
-}
-*/
-
 - (void) performRequest:(NSString *)urlString usingRequestMethod:(RMFBRequestMethod)method usingParameters:(NSDictionary *)parameters andCompletionHandler:(RMFBLayerCompletionBlock)completionHandler {
 	[fb sendRequest:urlString params:parameters usePostRequest:(method==RMFBPOSTRequest) withCompletionBlock:^(NSDictionary *result) {
 
@@ -83,9 +66,6 @@
 			completionHandler(json,nil);
 		}
 	}];
-
-	//if (!request2BlockMap) request2BlockMap = [NSMutableDictionary dictionary];
-	//[request2BlockMap setObject:completionHandler forKey:urlString];
 }
 
 - (void) performGETRequest:(NSString *)urlString usingParameters: (NSDictionary *)parameters andCompletionHandler:(RMFBLayerCompletionBlock)completionHandler {

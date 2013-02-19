@@ -6,19 +6,37 @@ OS X Facebook integration (Social.framework) might not be available due to the f
 
 RMFBLayer provides a streamlined interface to the two Facebook API abstractions to facilitate the data retrieval. All requests are based on the completion block paradigm.
 
-**WARNING:** Since PhFacebook.framework originally does not support completion blocks, a modified version is available as fork, too.
+**WARNING:** Since PhFacebook.framework originally does not support completion blocks, a modified version is available [as fork](https://github.com/raffael-me/PhFacebook), separately.
+
+## Requires:
+- You have added Social.framework to your app
+- You have added the [PhFacebook.framework](https://github.com/raffael-me/PhFacebook) with completion block support
 
 ## Usage:
 
 1. Set the prefered abstraction and add the two abstractions:
+
+```smalltalk
 	[[RMFBLayer sharedInstance] setPreferedFramework:RMFBFrameworkOSX];
 	[[RMFBLayer sharedInstance] addAbstraction:[[RMFBOSX alloc] initWithFacebookAppId:kFacebookAppId]];
 	[[RMFBLayer sharedInstance] addAbstraction:[[RMFBPhFacebook alloc] initWithFacebookAppId:kFacebookAppId]];
+```
+
 2. Set the delegate in order to be notified once the auth has finished:
+
+```smalltalk
 	[[RMFBLayer sharedInstance] setDelegate:self];
+```
+
 3. Start the authentication:
+
+```smalltalk
 	[[RMFBLayer sharedInstance] authForPermissions:@[@"read_mailbox"]];
+```
+
 4. Make a new request:
+
+```smalltalk
 	[[RMFBLayer sharedInstance] performGETRequest:@"/me" usingParameters:@{
 		@"fields": @"id"
 	} andCompletionHandler:^(NSObject *resultObject, NSError *error) {
@@ -26,6 +44,7 @@ RMFBLayer provides a streamlined interface to the two Facebook API abstractions 
 		NSLog(@"Get request error: %@", error);
 		NSString *identifier = [((NSDictionary *)resultObject) objectForKey:@"id"];
 	}];
+```
 
 # Status
 Currently marked as BETA

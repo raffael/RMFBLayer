@@ -67,7 +67,6 @@ typedef void (^RMFBLayerRenewalBlock)();
 /** Perform a request with a given HTTP request method type, a set of parameters and a completion handler. */
 - (void) performRequest:(NSString *) urlString usingRequestMethod:(RMFBRequestMethod) method usingParameters:(NSDictionary *) parameters andCompletionHandler: (RMFBLayerCompletionBlock) completionHandler;
 
-//TODO: possible to move the triggering of renewal to auth; so that the accesstoken is always valid?
 - (void) renewAccessTokenWithCompletionHandler:(RMFBLayerRenewalBlock) completionHandler;
 
 @property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
