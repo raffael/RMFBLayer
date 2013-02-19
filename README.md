@@ -1,6 +1,6 @@
 # RMFBLayer
 
-RMFBLayer is a class to access the Facebook API within OS X applications by sending requests either using the OS X Facebook integration (if available) or PhFacebook.framework as fallback.
+RMFBLayer is a class to access the Facebook API within OS X applications by sending requests either using the **OS X Facebook integration** (if available) or **PhFacebook.framework** as fallback.
 
 OS X Facebook integration (Social.framework) might not be available due to the fact that the user has not updated yet to OS X 10.8.2 or that the user has not set up the Facebook account in his System Preferences. The RMFBLayer automatically recognizes these circumstances and uses then PhFacebook.framework instead.
 
