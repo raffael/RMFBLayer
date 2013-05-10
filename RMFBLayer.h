@@ -33,6 +33,9 @@ typedef enum {
 /** The default abstraction that will be used, if not set explicitely. */
 #define RMFBDefaultPreferedFramework RMFBFrameworkOSX
 
+/** The default flag for whether the user's information shall be fetched as soon as the access_token is valid. */
+#define RMFBDefaultAutofetchUserInformation YES
+
 /** The Graph base URI. */
 #define RMFBBaseUri @"https://graph.facebook.com"
 
@@ -93,6 +96,9 @@ typedef void (^RMFBLayerRenewalBlock)();
 @property (retain,nonatomic) NSString *accessToken;
 @property (retain,nonatomic) id<RMFBLayerDelegate> delegate;
 @property (retain) NSArray *permissions;
+@property (retain) NSDictionary *userInformation;
+//TODO: implement logic behind:
+@property (assign) BOOL autofetchUserInformation;
 
 - (void) addOSXAbstraction;
 - (void) addPhFacebookAbstraction;

@@ -37,6 +37,10 @@
 	[fb getAccessTokenForPermissions:requestedPermissions cached:YES];
 }
 
+- (void) setLoginRedirectURL:(NSString *)loginRedirectURL {
+	[fb setLoginSuccessURL:loginRedirectURL];
+}
+
 #pragma mark -
 #pragma mark PhFacebook delegate methods
 - (void) tokenResult:(NSDictionary *)result {
@@ -50,9 +54,22 @@
 }
 
 - (void) performRequest:(NSString *)urlString usingRequestMethod:(RMFBRequestMethod)method usingParameters:(NSDictionary *)parameters andCompletionHandler:(RMFBLayerCompletionBlock)completionHandler {
-	[fb sendRequest:urlString params:parameters usePostRequest:(method==RMFBPOSTRequest) withCompletionBlock:^(NSDictionary *result) {
+
+	NSMutableDictionary *encodedParameters = [NSMutableDictionary dictionaryWithCapacity:parameters.count];
+	for(NSString *key in parameters) {
+		NSString *originalValue = [parameters objectForKey:key];
+		NSString *encodedValue = CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,(CFStringRef)originalValue,
+																					 NULL,
+																					 (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+																					 kCFStringEncodingUTF8 ));
+
+		[encodedParameters setObject:encodedValue forKey:key];
+	}
+
+	[fb sendRequest:urlString params:encodedParameters usePostRequest:(method==RMFBPOSTRequest) withCompletionBlock:^(NSDictionary *result) {
 
 		NSString *jsonString = [result objectForKey:@"result"];
+
 		NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
 		NSError *jsonError;
 	//TODO: critical assumption: result is always dictionary, never array?

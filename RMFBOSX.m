@@ -68,7 +68,7 @@
 - (void) testAccessToken {
 	/** Trigger a test request, for which a valid access_token is required, with the current credentials / access_token. */
 	[self performGETRequest:@"/me/"
-			usingParameters:@{@"fields": @"id"}
+			usingParameters:nil
 	   andCompletionHandler:^(NSObject *resultObject, NSError *error) {
 		   /** If this handler has been called, it means that the access_token now is valid. However it might have been renewed automatically during the request operation. */
 		   self.accessToken = self.osxFbAccount.credential.oauthToken;

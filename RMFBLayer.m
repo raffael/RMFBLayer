@@ -25,6 +25,7 @@ static RMFBLayer *instance;
     if (self) {
         abstractions = [NSMutableArray array];
 		self.preferedFramework = RMFBDefaultPreferedFramework;
+		self.autofetchUserInformation = RMFBDefaultAutofetchUserInformation;
     }
     return self;
 }

@@ -19,5 +19,6 @@
 @property (retain,nonatomic) NSString *accessToken;
 @property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
 @property (retain) id<RMFBAbstractionFailDelegate> failDelegate;
+- (void) setLoginRedirectURL: (NSString *) loginRedirectURL;
 
 @end
