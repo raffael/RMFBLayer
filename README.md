@@ -6,12 +6,12 @@ OS X Facebook integration (Social.framework) might not be available due to the f
 
 RMFBLayer provides a streamlined interface to the two Facebook API abstractions to facilitate the data retrieval. All requests are based on the completion block paradigm.
 
-**WARNING:** Since PhFacebook.framework originally does not support completion blocks, a modified version is available [as fork](https://github.com/raffael-me/PhFacebook), separately.
+**WARNING:** Since PhFacebook.framework originally does not support completion blocks, a modified version is available [as fork](https://github.com/raffael/PhFacebook), separately.
 
 ## Requirements:
 
 - You have added Social.framework to your app
-- You have added the [PhFacebook.framework](https://github.com/raffael-me/PhFacebook) with completion block support
+- You have added the [PhFacebook.framework](https://github.com/raffael/PhFacebook) with completion block support
 
 ## Details:
 
@@ -62,7 +62,7 @@ Currently marked as BETA. PhFacebook usage has not been tested heavily.
 ## Contact
 
 * Raffael Hannemann
-* [@raffael-me](http://www.twitter.com/raffael-me/)
+* [@raffael_me](http://www.twitter.com/raffael_me/)
 * http://www.raffael.me/
 
 ## License
@@ -72,4 +72,4 @@ Under BSD License.
 
 ## Want more?
 
-Follow [@raffael-me](http://www.twitter.com/raffael-me/) for similar releases.
+Follow [@raffael_me](http://www.twitter.com/raffael_me/) for similar releases.
