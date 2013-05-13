@@ -62,7 +62,7 @@ Currently marked as BETA. PhFacebook usage has not been tested heavily.
 ## Contact
 
 * Raffael Hannemann
-* [@raffael-me](http://www.twitter.com/raffae-me/)
+* [@raffael-me](http://www.twitter.com/raffael-me/)
 * http://www.raffael.me/
 
 ## License
@@ -72,4 +72,4 @@ Under BSD License.
 
 ## Want more?
 
-Follow [@raffael-me](http://www.twitter.com/raffae-me/) for similar releases.
+Follow [@raffael-me](http://www.twitter.com/raffael-me/) for similar releases.
