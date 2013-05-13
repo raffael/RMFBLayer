@@ -58,3 +58,18 @@ To make FQL requests, wrap them into a normal GET request.
 
 # Status
 Currently marked as BETA. PhFacebook usage has not been tested heavily.
+
+## Contact
+
+* Raffael Hannemann
+* [@raffael-me](http://www.twitter.com/raffae-me/)
+* http://www.raffael.me/
+
+## License
+
+Copyright (c) 2013 Raffael Hannemann
+Under BSD License.
+
+## Want more?
+
+Follow [@raffael-me](http://www.twitter.com/raffae-me/) for similar releases.
