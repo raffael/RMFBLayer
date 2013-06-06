@@ -24,10 +24,10 @@ To make FQL requests, wrap them into a normal GET request.
 
 ## Usage:
 
-1. Set the prefered abstraction and add the two abstractions:
+1. Set the preferred abstraction and add the two abstractions:
 
 ```smalltalk
-	[[RMFBLayer sharedInstance] setPreferedFramework:RMFBFrameworkOSX];
+	[[RMFBLayer sharedInstance] setPreferredFramework:RMFBFrameworkOSX];
 	[[RMFBLayer sharedInstance] addAbstraction:[[RMFBOSX alloc] initWithFacebookAppId:kFacebookAppId]];
 	[[RMFBLayer sharedInstance] addAbstraction:[[RMFBPhFacebook alloc] initWithFacebookAppId:kFacebookAppId]];
 ```

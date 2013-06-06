@@ -96,7 +96,7 @@
 
 		NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 		NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-		NSError *jsonError;
+		NSError *jsonError = nil;
 		NSDictionary *json = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves|NSJSONReadingAllowFragments error:&jsonError];
 
 		if (jsonError) {
@@ -140,6 +140,10 @@
 			[self.failDelegate abstractionFailed:self];
 		}
 	}];
+}
+
+- (RMFBFrameworkIdentifier) abstractionIdentifier {
+	return RMFBFrameworkOSX;
 }
 
 @end

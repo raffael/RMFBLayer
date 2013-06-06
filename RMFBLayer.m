@@ -24,7 +24,7 @@ static RMFBLayer *instance;
     self = [super init];
     if (self) {
         abstractions = [NSMutableArray array];
-		self.preferedFramework = RMFBDefaultPreferedFramework;
+		self.preferredFramework = RMFBDefaultPreferredFramework;
 		self.autofetchUserInformation = RMFBDefaultAutofetchUserInformation;
     }
     return self;
@@ -34,7 +34,7 @@ static RMFBLayer *instance;
     self = [self init];
     if (self) {
     	self.facebookAppId = appId;
-		self.preferedFramework = RMFBFrameworkOSX;
+		self.preferredFramework = RMFBDefaultPreferredFramework;
     }
     return self;
 }
@@ -44,7 +44,15 @@ static RMFBLayer *instance;
 	if (self.facebookAppId) [newAbstraction setFacebookAppId:self.facebookAppId];
 	if (self.delegate) [newAbstraction setDelegate:_delegate];
 	[newAbstraction setFailDelegate:self];
-	if (!_abstraction) _abstraction = newAbstraction;
+	if (abstractions.count==1) _abstraction = newAbstraction;
+	else {
+		for(id<RMFBAbstraction> abstraction in abstractions) {
+			if (self.preferredFramework==[abstraction abstractionIdentifier]) {
+				_abstraction = abstraction;
+			}
+		}
+		if (!_abstraction) _abstraction = [abstractions lastObject];
+	}
 }
 
 - (void) setDelegate:(id<RMFBLayerDelegate>)delegate {

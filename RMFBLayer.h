@@ -9,11 +9,11 @@
 #import <Accounts/Accounts.h>
 #import <Social/Social.h>
 
-/** Identifiers for the available FB API Abstractions. */
+/** Identifiers for the available FB API Abstractions. Extend the enum when adding new abstractions. */
 typedef enum {
 	RMFBFrameworkOSX,
 	RMFBFrameworkPhFacebook
-} RMFBFramework;
+} RMFBFrameworkIdentifier;
 
 /** Identifiers for the four HTTP request methods. */
 typedef enum {
@@ -31,7 +31,7 @@ typedef enum {
 } RMFBAbstractionErrors;
 
 /** The default abstraction that will be used, if not set explicitely. */
-#define RMFBDefaultPreferedFramework RMFBFrameworkOSX
+#define RMFBDefaultPreferredFramework RMFBFrameworkOSX
 
 /** The default flag for whether the user's information shall be fetched as soon as the access_token is valid. */
 #define RMFBDefaultAutofetchUserInformation YES
@@ -72,6 +72,8 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 - (void) renewAccessTokenWithCompletionHandler:(RMFBLayerRenewalBlock) completionHandler;
 
+- (RMFBFrameworkIdentifier) abstractionIdentifier;
+
 @property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
 @property (retain) NSString *facebookAppId;
 @property (retain,nonatomic) NSString *accessToken;
@@ -90,7 +92,7 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 +(RMFBLayer *) sharedInstance;
 -(RMFBLayer *) layerWithFacebookAppId:(NSString *) appId;
-@property (assign) RMFBFramework preferedFramework;
+@property (assign) RMFBFrameworkIdentifier preferredFramework;
 @property (assign, readonly) id<RMFBAbstraction> abstraction;
 @property (retain) NSString *facebookAppId;
 @property (retain,nonatomic) NSString *accessToken;

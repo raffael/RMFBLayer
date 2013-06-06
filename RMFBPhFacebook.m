@@ -93,4 +93,9 @@
 	[self performRequest:urlString usingRequestMethod:RMFBPOSTRequest usingParameters:parameters andCompletionHandler:completionHandler];
 }
 
+
+- (RMFBFrameworkIdentifier) abstractionIdentifier {
+	return RMFBFrameworkPhFacebook;
+}
+
 @end
