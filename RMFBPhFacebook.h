@@ -19,6 +19,7 @@
 @property (retain,nonatomic) NSString *accessToken;
 @property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
 @property (retain) id<RMFBAbstractionFailDelegate> failDelegate;
-- (void) setLoginRedirectURL: (NSString *) loginRedirectURL;
+
+- (void) setLoginRedirectURL: (NSString *) loginRedirectURL; // URL where to redirect once user submits login form, MUST be set.
 
 @end

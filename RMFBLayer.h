@@ -27,7 +27,8 @@ typedef enum {
 typedef enum {
 	RMFBAbstractionErrorUnknownError,
 	RMFBAbstractionErrorJSONError,
-	RMFBAbstractionErrorAPIError
+	RMFBAbstractionErrorAPIError,
+	RMFBAbstractionErrorAuthenticationError,
 } RMFBAbstractionErrors;
 
 /** The default abstraction that will be used, if not set explicitely. */
@@ -44,8 +45,10 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 /** Layer Delegates will be notified once the user has been authenticated successfully or authentication failed. */
 @protocol RMFBLayerDelegate <NSObject>
-- (void) facebookAuthSucceeded;
-- (void) facebookAuthFailed;
+- (void) facebookAuthenticationCanceled;
+- (void) facebookAuthenticationSucceeded;
+- (void) facebookAuthenticationFailedFinallyWithError: (NSError *) error;
+- (void) facebookAbstractionSwitchedAfterFail: (RMFBFrameworkIdentifier) failedFrameworkIdentifier;
 @end
 
 @protocol RMFBAbstractionFailDelegate;
@@ -72,6 +75,8 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 - (void) renewAccessTokenWithCompletionHandler:(RMFBLayerRenewalBlock) completionHandler;
 
+- (void) invalidateSession;
+
 - (RMFBFrameworkIdentifier) abstractionIdentifier;
 
 @property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
@@ -82,21 +87,22 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 /** The delegate will be called, once one abstraction instance failed, e.g. if the user is running on OS X < 10.8.1, or the user did not activate Facebook integration. You should not implement this delegate, instead the RMFBLayer will implement it to handle failure automatically to select another abstraction instance and try the last request with it once again. */
 @protocol RMFBAbstractionFailDelegate <NSObject>
-- (void) abstractionFailed: (id<RMFBAbstraction>) sender;
+- (void) abstraction: (id<RMFBAbstraction>) sender failedWithError: (NSError *) error;
 @end
 
 @interface RMFBLayer : NSObject <RMFBAbstraction, RMFBLayerDelegate, RMFBAbstractionFailDelegate> {
 	NSMutableArray *abstractions;
 	id<RMFBLayerDelegate> _delegate;
+	int _failedAbstractions;
 }
 
 +(RMFBLayer *) sharedInstance;
 -(RMFBLayer *) layerWithFacebookAppId:(NSString *) appId;
-@property (assign) RMFBFrameworkIdentifier preferredFramework;
+@property (assign,nonatomic) RMFBFrameworkIdentifier preferredFramework;
 @property (assign, readonly) id<RMFBAbstraction> abstraction;
 @property (retain) NSString *facebookAppId;
 @property (retain,nonatomic) NSString *accessToken;
-@property (retain,nonatomic) id<RMFBLayerDelegate> delegate;
+@property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
 @property (retain) NSArray *permissions;
 @property (retain) NSDictionary *userInformation;
 //TODO: implement logic behind:

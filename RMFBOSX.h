@@ -10,7 +10,19 @@
 #import <Social/Social.h>
 #import "RMFBLayer.h"
 
-@interface RMFBOSX : NSObject <RMFBAbstraction>
+typedef NS_ENUM(NSUInteger, RMFBOSXErrorCode) {
+	RMFBOSXNotSupported,
+	RMFBOSXObtainingAccountIdentifierTimedOut,
+	RMFBOSXAppNotAllowed,
+	RMFBOSXUnkownAccountAccessError,
+	RMFBOSXTooManyAttempts,
+};
+
+@interface RMFBOSX : NSObject <RMFBAbstraction> {
+	BOOL _isObtainingAccountType;
+	NSThread *_obtainingAccountTypeThread;
+	int _authAttempts;
+}
 
 @property (retain) NSString *facebookAppId;
 @property (retain,nonatomic) NSString *accessToken;

@@ -46,10 +46,12 @@
 - (void) tokenResult:(NSDictionary *)result {
 	if ([[result valueForKey: @"valid"] boolValue]==YES) {
 		self.accessToken = [fb accessToken];
-		[self.delegate performSelectorOnMainThread:@selector(facebookAuthSucceeded) withObject:nil waitUntilDone:NO ];
+		[self.delegate performSelectorOnMainThread:@selector(facebookAuthenticationSucceeded) withObject:nil waitUntilDone:NO ];
 
 	} else {
-		[self.delegate performSelectorOnMainThread:@selector(facebookAuthFailed) withObject:nil waitUntilDone:NO ];
+		[self.failDelegate abstraction:self failedWithError:[NSError errorWithDomain:@"me.raffael.RMFBLayer" code:0 userInfo:@{@"layer":@"PHFacebook",@"access_tokenResult":result}]];
+		
+		//[self.delegate performSelectorOnMainThread:@selector(facebookAuthenticationFailedFinallyWithAbstraction:) withObject:self waitUntilDone:NO ];
 	}
 }
 
@@ -93,9 +95,18 @@
 	[self performRequest:urlString usingRequestMethod:RMFBPOSTRequest usingParameters:parameters andCompletionHandler:completionHandler];
 }
 
+- (void) invalidateSession {
+	[fb invalidateCachedToken];
+	self.accessToken = nil;
+}
 
 - (RMFBFrameworkIdentifier) abstractionIdentifier {
 	return RMFBFrameworkPhFacebook;
+}
+
+- (void) didDismissUI:(PhFacebook *)sender {
+	if ([self.delegate respondsToSelector:@selector(facebookAuthenticationCanceled)])
+		[self.delegate facebookAuthenticationCanceled];
 }
 
 @end

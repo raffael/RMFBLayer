@@ -55,6 +55,10 @@ static RMFBLayer *instance;
 	}
 }
 
+- (RMFBFrameworkIdentifier) abstractionIdentifier {
+	return [_abstraction abstractionIdentifier];
+}
+
 - (void) setDelegate:(id<RMFBLayerDelegate>)delegate {
 	_delegate = delegate;
 	for(id<RMFBAbstraction> abstraction in abstractions)
@@ -75,19 +79,56 @@ static RMFBLayer *instance;
 
 - (void) authForPermissions:(NSArray *)permissions {
 	self.permissions = [permissions copy];
-	[_abstraction authForPermissions:self.permissions];
+	[(NSObject *)_abstraction performSelectorOnMainThread:@selector(authForPermissions:) withObject:permissions waitUntilDone:YES];
 }
 
-- (void) abstractionFailed:(id<RMFBAbstraction>)sender {
+- (void) setPreferredFramework:(RMFBFrameworkIdentifier)preferredFramework {
+	if (_preferredFramework != preferredFramework) {
+		for(id<RMFBAbstraction> abstraction in abstractions) {
+			if (preferredFramework==[abstraction abstractionIdentifier]) {
+				_abstraction = abstraction;
+			}
+		}
+	}
+	_preferredFramework = preferredFramework;
+}
+
+/** Switching abstractions only happend during authenticating. */
+- (void) abstraction:(id<RMFBAbstraction>)sender failedWithError:(NSError *)error {
+	
+	// If all abstractions have been tried out, fail finally
+	_failedAbstractions++;
+	if (_failedAbstractions>=abstractions.count) {
+		[self.delegate performSelectorOnMainThread:@selector(facebookAuthenticationFailedFinallyWithError:) withObject:error waitUntilDone:NO];
+		return;
+	}
+	
+	// ... else, switch to the next abstraction
 	int currentIndex = (int)[abstractions indexOfObject:self.abstraction];
+	
+	// Notify the delegate about the switching
+	if ([self.delegate respondsToSelector:@selector(facebookAbstractionSwitchedAfterFail:)])
+		[self.delegate facebookAbstractionSwitchedAfterFail:currentIndex];
+
 	currentIndex = (currentIndex +1) % (int)abstractions.count;
 	_abstraction = [abstractions objectAtIndex:currentIndex];
 	NSLog(@"RMFBLayer: Switched abstraction after previous abstraction failed.");
+	
 	[_abstraction authForPermissions:self.permissions];
 }
 
 - (NSString *) accessToken {
 	return [self.abstraction accessToken];
+}
+
+- (void) invalidateSession {
+	[self.abstraction invalidateSession];
+}
+
+- (void) setFacebookAppId:(NSString *)facebookAppId {
+	_facebookAppId = facebookAppId;
+	for(id<RMFBAbstraction> abstraction in abstractions)
+		[abstraction setFacebookAppId:facebookAppId];
 }
 
 @end
