@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, RMFBOSXErrorCode) {
 	RMFBOSXAppNotAllowed,
 	RMFBOSXUnkownAccountAccessError,
 	RMFBOSXTooManyAttempts,
+	RMFBOSXAccountCredentialRenewalFailed,
 };
 
 @interface RMFBOSX : NSObject <RMFBAbstraction> {

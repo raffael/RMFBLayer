@@ -75,6 +75,10 @@
 	return [NSError errorWithDomain:@"me.raffael.RMFBLayer" code:RMFBOSXObtainingAccountIdentifierTimedOut userInfo:nil];
 }
 
++ (NSError *) accountCredentialsRenewalFailedErrorWithRenewalResult:(ACAccountCredentialRenewResult) result  {
+	return [NSError errorWithDomain:@"me.raffael.RMFBLayer" code:RMFBOSXAccountCredentialRenewalFailed userInfo:@{@"ACAccountCredentialRenewResult":[NSNumber numberWithInteger:result]}];
+}
+
 - (void) authForPermissions:(NSArray *)permissions {
 	_authAttempts++;
 	
@@ -188,8 +192,7 @@
 					   case ACAccountCredentialRenewResultFailed:
 					   case ACAccountCredentialRenewResultRejected:
 					   default:{
-						   NSError *error = [NSError errorWithDomain:@"RMFBOSX" code:RMFBAbstractionErrorJSONError userInfo:@{@"ACAccountCredentialRenewResult":[NSNumber numberWithInteger:renewResult]}];
-						   [self.delegate facebookAuthenticationFailedFinallyWithError:error];
+						   [self.delegate facebookAuthenticationFailedFinallyWithError:[RMFBOSX accountCredentialsRenewalFailedErrorWithRenewalResult:renewResult]];
 					   }
 				   }
 				   
