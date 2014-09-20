@@ -31,9 +31,13 @@
 	Class accountStoreClass = NSClassFromString(@"ACAccountStore");
 	
 	SInt32 major, minor, bugfix;
+#if TARGET_OS_IPHONE
+	return YES;
+#else
 	Gestalt(gestaltSystemVersionMajor, &major);
 	Gestalt(gestaltSystemVersionMinor, &minor);
 	Gestalt(gestaltSystemVersionBugFix, &bugfix);	
+#endif
 	return (((major>=10 && minor >= 8 && bugfix >= 2) || (major>=10 && minor >= 9)) && accountStoreClass!=nil);
 }
 
@@ -52,9 +56,12 @@
 
 + (NSError *) notSupportedError {
 	SInt32 major, minor, bugfix;
+#if TARGET_OS_IPHONE
+#else
 	Gestalt(gestaltSystemVersionMajor, &major);
 	Gestalt(gestaltSystemVersionMinor, &minor);
 	Gestalt(gestaltSystemVersionBugFix, &bugfix);
+#endif
 	NSString *OS = [NSString stringWithFormat:@"%d.%d.%d",major,minor,bugfix];
 	return [NSError errorWithDomain:@"me.raffael.RMFBLayer" code:RMFBOSXNotSupported userInfo:@{@"OS":OS}];
 }
@@ -77,6 +84,10 @@
 
 + (NSError *) accountCredentialsRenewalFailedErrorWithRenewalResult:(ACAccountCredentialRenewResult) result  {
 	return [NSError errorWithDomain:@"me.raffael.RMFBLayer" code:RMFBOSXAccountCredentialRenewalFailed userInfo:@{@"ACAccountCredentialRenewResult":[NSNumber numberWithInteger:result]}];
+}
+
++ (NSError *) OSXFBAccountIsNilError {
+	return [NSError errorWithDomain:@"me.raffael.RMFBLayer" code:RMFBOSXAccountIsNil userInfo:nil];
 }
 
 - (void) authForPermissions:(NSArray *)permissions {
@@ -143,6 +154,8 @@
 												  options:fbInfo
 											   completion:^(BOOL granted, NSError *error) {
 												   if (error) {
+													   _authenticated = NO;
+													   
 													   if ([error code]==6) {
 														   NSLog(@"RMFBOSX: Failed to authenticate, will notify failDelegate. Error: %@",error);
 														   [self.failDelegate abstraction:self failedWithError:[RMFBOSX appAccessNotAllowedErrorWithError:error]];
@@ -154,6 +167,7 @@
 														
 												   }
 												   if (granted) {
+													   
 													   // If access granted, then get the Facebook account info
 													   NSArray *accounts = [self.osxAccountStore accountsWithAccountType:fbAccountType];
 													   self.osxFbAccount = [accounts lastObject];
@@ -170,6 +184,8 @@
 														   [self testAccessToken];
 													   }
 												   } else {
+													   _authenticated = NO;
+													   
 													   NSLog(@"RMFBOSX: Access not granted, error: %@", error);
 													   [self.delegate performSelectorOnMainThread:@selector(facebookAuthenticationCanceled) withObject:nil waitUntilDone:NO];
 												   }
@@ -200,6 +216,8 @@
 			   return;
 		   }
 		   
+		   _authenticated = YES;
+
 		   self.accessToken = self.osxFbAccount.credential.oauthToken;
 
 		   /** Thus, notify the delegate that authentication has been successful. */
@@ -208,6 +226,9 @@
 }
 
 - (NSString *) finalAPIURLStringFor:(NSString *) suffix {
+	if (![[suffix substringToIndex:1] isEqualToString:@"/"]) {
+		suffix = [@"/" stringByAppendingString:suffix];
+	}
 	NSString *string = [RMFBBaseUri stringByAppendingString:suffix];
 	return [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
@@ -265,6 +286,10 @@
 
 - (void) renewAccessTokenWithCompletionHandler:(RMFBLayerRenewalBlock)completionHandler {
 	NSLog(@"RMFBOSX: Will renew access_token ...");
+	if (self.osxFbAccount==nil) {
+		[self.failDelegate abstraction:self failedWithError:[RMFBOSX OSXFBAccountIsNilError]];
+		return;
+	}
 	[self.osxAccountStore renewCredentialsForAccount:self.osxFbAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
 		if (renewResult == ACAccountCredentialRenewResultRenewed) {
 			NSLog(@"RMFBOSX: access_token renewed.");
@@ -284,6 +309,7 @@
 - (void) invalidateSession {
 	self.osxAccountStore = nil;
 	self.accessToken = nil;
+	_authenticated = NO;
 }
 
 @end

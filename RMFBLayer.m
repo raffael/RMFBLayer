@@ -55,6 +55,10 @@ static RMFBLayer *instance;
 	}
 }
 
+- (BOOL) authenticated {
+	return self.abstraction.authenticated;
+}
+
 - (RMFBFrameworkIdentifier) abstractionIdentifier {
 	return [_abstraction abstractionIdentifier];
 }
@@ -69,12 +73,35 @@ static RMFBLayer *instance;
 	[_abstraction performRequest:urlString usingRequestMethod:method usingParameters:parameters andCompletionHandler:completionHandler];
 }
 
+/// Every request will be processed by the following request result handler, that takes a look at the error, if it's set, or performs the completion handler.
+- (void) handleRequestResult: (NSObject *) resultObject withError: (NSError *) error completionBlock: (RMFBLayerCompletionBlock) completionHandler {
+	if (error) {
+		// Check if the error is due to a recent password change
+		NSDictionary *apiError = [error.userInfo objectForKey:@"api-error"];
+		if (apiError) {
+			if ([apiError[@"code"] isEqualToNumber:@190] && [apiError[@"error_subcode"] isEqualToNumber:@460]) {
+				[self.delegate facebookRequestCanceledRequireNewLogin:YES];
+			} else {
+				completionHandler(resultObject, error);
+			}
+		} else {
+			completionHandler(resultObject, error);
+		}
+	} else {
+		completionHandler(resultObject, error);
+	}
+}
+
 - (void) performGETRequest:(NSString *)urlString usingParameters:(NSDictionary *)parameters andCompletionHandler:(RMFBLayerCompletionBlock)completionHandler {
-	[_abstraction performGETRequest:urlString usingParameters:parameters andCompletionHandler:completionHandler];
+	[_abstraction performGETRequest:urlString usingParameters:parameters andCompletionHandler:^(NSObject *resultObject, NSError *error) {
+		[self handleRequestResult:resultObject withError:error completionBlock:completionHandler];
+	}];
 }
 
 - (void) performPOSTRequest:(NSString *)urlString usingParameters:(NSDictionary *)parameters andCompletionHandler:(RMFBLayerCompletionBlock)completionHandler {
-	[_abstraction performPOSTRequest:urlString usingParameters:parameters andCompletionHandler:completionHandler];
+	[_abstraction performPOSTRequest:urlString usingParameters:parameters andCompletionHandler:^(NSObject *resultObject, NSError *error) {
+		[self handleRequestResult:resultObject withError:error completionBlock:completionHandler];
+	}];
 }
 
 - (void) authForPermissions:(NSArray *)permissions {
@@ -124,6 +151,16 @@ static RMFBLayer *instance;
 - (void) invalidateSession {
 	[self.abstraction invalidateSession];
 }
+
+- (BOOL) handleFacebookSDKCallbackURL: (NSURL *) URL sourceApplication: (NSString *) sourceApplication {
+	BOOL result = NO;
+	if (self.abstractionIdentifier == RMFBFrameworkFacebookSDK && [self.abstraction respondsToSelector:@selector(handleOpenURL:sourceApplication:)]) {
+		[self.abstraction performSelector:@selector(handleOpenURL:sourceApplication:) withObject:URL withObject:sourceApplication];
+		result = YES;
+	}
+	return result;
+}
+
 
 - (void) setFacebookAppId:(NSString *)facebookAppId {
 	_facebookAppId = facebookAppId;

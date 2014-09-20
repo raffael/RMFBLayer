@@ -46,9 +46,11 @@
 - (void) tokenResult:(NSDictionary *)result {
 	if ([[result valueForKey: @"valid"] boolValue]==YES) {
 		self.accessToken = [fb accessToken];
+		_authenticated = YES;
 		[self.delegate performSelectorOnMainThread:@selector(facebookAuthenticationSucceeded) withObject:nil waitUntilDone:NO ];
 
 	} else {
+		_authenticated = NO;
 		[self.failDelegate abstraction:self failedWithError:[NSError errorWithDomain:@"me.raffael.RMFBLayer" code:0 userInfo:@{@"layer":@"PHFacebook",@"access_tokenResult":result}]];
 		
 		//[self.delegate performSelectorOnMainThread:@selector(facebookAuthenticationFailedFinallyWithAbstraction:) withObject:self waitUntilDone:NO ];
@@ -98,6 +100,7 @@
 - (void) invalidateSession {
 	[fb invalidateCachedToken];
 	self.accessToken = nil;
+	_authenticated = NO;
 }
 
 - (RMFBFrameworkIdentifier) abstractionIdentifier {

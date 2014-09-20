@@ -12,7 +12,8 @@
 /** Identifiers for the available FB API Abstractions. Extend the enum when adding new abstractions. */
 typedef enum {
 	RMFBFrameworkOSX,
-	RMFBFrameworkPhFacebook
+	RMFBFrameworkPhFacebook,
+	RMFBFrameworkFacebookSDK
 } RMFBFrameworkIdentifier;
 
 /** Identifiers for the four HTTP request methods. */
@@ -49,6 +50,7 @@ typedef void (^RMFBLayerRenewalBlock)();
 - (void) facebookAuthenticationSucceeded;
 - (void) facebookAuthenticationFailedFinallyWithError: (NSError *) error;
 - (void) facebookAbstractionSwitchedAfterFail: (RMFBFrameworkIdentifier) failedFrameworkIdentifier;
+- (void) facebookRequestCanceledRequireNewLogin: (BOOL) loginRequired;
 @end
 
 @protocol RMFBAbstractionFailDelegate;
@@ -77,12 +79,15 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 - (void) invalidateSession;
 
+- (BOOL) handleFacebookSDKCallbackURL: (NSURL *) URL sourceApplication: (NSString *) sourceApplication;
+
 - (RMFBFrameworkIdentifier) abstractionIdentifier;
 
-@property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
-@property (retain) NSString *facebookAppId;
-@property (retain,nonatomic) NSString *accessToken;
-@property (retain) id<RMFBAbstractionFailDelegate> failDelegate;
+@property (weak,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
+@property (strong) NSString *facebookAppId;
+@property (strong,nonatomic) NSString *accessToken;
+@property (assign,readonly) BOOL authenticated;
+@property (weak) id<RMFBAbstractionFailDelegate> failDelegate;
 @end
 
 /** The delegate will be called, once one abstraction instance failed, e.g. if the user is running on OS X < 10.8.1, or the user did not activate Facebook integration. You should not implement this delegate, instead the RMFBLayer will implement it to handle failure automatically to select another abstraction instance and try the last request with it once again. */
@@ -92,7 +97,6 @@ typedef void (^RMFBLayerRenewalBlock)();
 
 @interface RMFBLayer : NSObject <RMFBAbstraction, RMFBLayerDelegate, RMFBAbstractionFailDelegate> {
 	NSMutableArray *abstractions;
-	id<RMFBLayerDelegate> _delegate;
 	int _failedAbstractions;
 }
 
@@ -100,6 +104,7 @@ typedef void (^RMFBLayerRenewalBlock)();
 -(RMFBLayer *) layerWithFacebookAppId:(NSString *) appId;
 @property (assign,nonatomic) RMFBFrameworkIdentifier preferredFramework;
 @property (assign, readonly) id<RMFBAbstraction> abstraction;
+@property (assign, readonly) BOOL authenticated;
 @property (retain) NSString *facebookAppId;
 @property (retain,nonatomic) NSString *accessToken;
 @property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;

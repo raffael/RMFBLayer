@@ -17,6 +17,7 @@ typedef NS_ENUM(NSUInteger, RMFBOSXErrorCode) {
 	RMFBOSXUnkownAccountAccessError,
 	RMFBOSXTooManyAttempts,
 	RMFBOSXAccountCredentialRenewalFailed,
+	RMFBOSXAccountIsNil,
 };
 
 @interface RMFBOSX : NSObject <RMFBAbstraction> {
@@ -25,14 +26,16 @@ typedef NS_ENUM(NSUInteger, RMFBOSXErrorCode) {
 	int _authAttempts;
 }
 
-@property (retain) NSString *facebookAppId;
-@property (retain,nonatomic) NSString *accessToken;
-@property (retain,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
-@property (retain) id<RMFBAbstractionFailDelegate> failDelegate;
+@property (strong) NSString *facebookAppId;
+@property (strong,nonatomic) NSString *accessToken;
+@property (weak,nonatomic) NSObject<RMFBLayerDelegate> *delegate;
+@property (weak) id<RMFBAbstractionFailDelegate> failDelegate;
 
-@property (retain) ACAccountStore *osxAccountStore;
-@property (retain) ACAccount *osxFbAccount;
-@property (retain) NSString *osxSlService;
-@property (retain) NSArray *permissions;
+@property (strong) ACAccountStore *osxAccountStore;
+@property (strong) ACAccount *osxFbAccount;
+@property (strong) NSString *osxSlService;
+@property (strong) NSArray *permissions;
+
+@property (assign,readonly) BOOL authenticated;
 
 @end
